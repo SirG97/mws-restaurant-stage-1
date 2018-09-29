@@ -37,7 +37,7 @@ class DBHelper {
             restaureviewStore.put(restaurant);
           });
         });
-        callback(null, restaurants);
+        callback(null, restaurants[key]);
 
       });
     }).catch(err =>{

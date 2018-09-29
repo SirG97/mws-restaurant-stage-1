@@ -39,9 +39,6 @@ self.addEventListener("activate", event =>{
 
 self.addEventListener("fetch", event =>{
     //get the response type of the requested asset and cache accordingly
-    console.log(event.request.url);
-    const destination = event.request.destination;
-    console.log(destination);
 
         event.respondWith(
             caches.match(event.request).then(response =>{

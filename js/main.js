@@ -166,6 +166,7 @@ createRestaurantHTML = (restaurant) => {
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   // const imgUrl = image.src.location.href;
   const imgUrl = image.src;
+  console.log(imgUrl);
   //get the name of the image eg, 1.jpg
   //const imgName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
   //split the name of the image so that I can be able to insert the suffix of the optimized images
