@@ -26,7 +26,11 @@ class DBHelper {
         return;
       }
       response.json().then(restaurants =>{
-        restaurants.map(restaurant =>{
+        const key = Object.keys(restaurants)[0]
+        console.log(key);
+
+        restaurants[key].map(restaurant =>{
+          console.log(restaurants[key]);
           dbPromise.then(db => {
             const tx = db.transaction("restaureview-store", "readwrite");
             const restaureviewStore = tx.objectStore("restaureview-store");
