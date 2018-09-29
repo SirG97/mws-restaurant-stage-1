@@ -30,7 +30,6 @@ class DBHelper {
         console.log(key);
 
         restaurants[key].map(restaurant =>{
-          console.log(restaurants[key]);
           dbPromise.then(db => {
             const tx = db.transaction("restaureview-store", "readwrite");
             const restaureviewStore = tx.objectStore("restaureview-store");
@@ -173,7 +172,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph || restaurant.id}.jpg`);
+    return (`/img/${restaurant.photograph}`);
   }
 
   /**
