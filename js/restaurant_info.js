@@ -88,7 +88,19 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img'
-  image.src = `${DBHelper.imageUrlForRestaurant(restaurant)}`;
+  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  const imgUrl = image.src;
+  console.log(imgUrl);
+  //get the name of the image eg, 1.jpg
+  //const imgName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
+  //split the name of the image so that I can be able to insert the suffix of the optimized images
+  imgName = imgUrl.substring(imgUrl.lastIndexOf('/') + 1);
+  imgName = imgName.split('.');
+  var ext = imgName.pop();
+  var file = imgName.join('.')
+  // added the srcset here but it's not working. 
+  //my optimized images looks like this - 1-large_32.jpg
+  image.srcset = `img/${file}-large_3x.${ext} 800w, img/${file}-medium_2x.${ext} 480w, img/${file}-small_1x.${ext} 320w`;
   image.alt = restaurant.name;
 
   const cuisine = document.getElementById('restaurant-cuisine');
