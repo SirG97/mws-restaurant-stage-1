@@ -75,7 +75,7 @@ fetchRestaurantFromURL = (callback) => {
     });
   }
 }
-
+ 
 /**
  * Create restaurant HTML and add it to the webpage
  */
@@ -88,7 +88,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img'
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.src = `restaureview/${DBHelper.imageUrlForRestaurant(restaurant)}`;
   image.alt = restaurant.name;
 
   const cuisine = document.getElementById('restaurant-cuisine');
