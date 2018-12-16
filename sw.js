@@ -1,3 +1,14 @@
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        // Registration was successful
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }, function(err) {
+        // registration failed :(
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
 let restaufiles = "restaureview-v1";
 let restauImages = "restauimage-v1";
 let cacheWhiteList = [restaufiles, restauImages];
