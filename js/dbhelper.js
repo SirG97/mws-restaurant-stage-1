@@ -11,6 +11,11 @@ class DBHelper {
     return `http://localhost:${port}/restaurants`;
   }
 
+  static get DATABASE_REVIEW_URL(){
+    const reviewport = 1337;
+    return `http://localhost:${reviewport}/reviews`
+  }
+
   /**
    * Fetch all restaurants.
    */
@@ -66,6 +71,19 @@ class DBHelper {
           callback('Restaurant does not exist', null);
         }
       }
+    });
+  }
+
+  static fetchReviews(callback){
+    let url = `${DBHelper.DATABASE_REVIEW_URL}/`;
+    console.log(url);
+    fetch(url).then(response =>{
+    
+        response.json().then(reviews=> {
+           callback(reviews);
+        }).catch(err => console.log(err));
+        
+    
     });
   }
 
@@ -164,11 +182,15 @@ class DBHelper {
   static urlForRestaurant(restaurant) {
     return (`./restaurant.html?id=${restaurant.id}`);
   }
+  static restaurantId(restaurant){
+    return `${restaurant.id}`;
+  }
 
   /**
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
+    
     return (`/img/${restaurant.photograph || restaurant.id}.jpg`);
   }
 
@@ -204,5 +226,14 @@ class DBHelper {
       console.log('Could not register with ', err);
     });
   }
+
+
+
+  static postReview(){
+    
+  }
+
 }
+
+
 
