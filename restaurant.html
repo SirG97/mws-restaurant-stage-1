@@ -52,14 +52,14 @@
     </section>
     <section id="form-wrapper">
       <div class="form-container">
-        <form action="http://localhost:1337/reviews/">
+        <form action="http://localhost:1337/reviews/" id="reviewForm" method="POST">
           <h3 class="form-title">Add a Review</h3>
           <div class="row">
             <div class="">
               <label for="name">Name</label>
             </div>
             <div class="">
-              <input type="text" id="name" name="name" placeholder="Your name.." required>
+              <input type="text" id="name" name="name" placeholder="Your name..">
             </div>
           </div>
           <div class="row">
@@ -69,29 +69,29 @@
             <div class="">
               <div class="rating">
                 <label>
-                  <input type="radio" name="stars" value="1" />
+                  <input type="radio" name="rating" value="1" />
                   <span class="icon">&#9733;</span>
                 </label>
                 <label>
-                  <input type="radio" name="stars" value="2" />
+                  <input type="radio" name="rating" value="2" />
                   <span class="icon">&#9733;</span>
                   <span class="icon">&#9733;</span>
                 </label>
                 <label>
-                  <input type="radio" name="stars" value="3" />
+                  <input type="radio" name="rating" value="3" />
                   <span class="icon">&#9733;</span>
                   <span class="icon">&#9733;</span>
                   <span class="icon">&#9733;</span>   
                 </label>
                 <label>
-                  <input type="radio" name="stars" value="4" />
+                  <input type="radio" name="rating" value="4" />
                   <span class="icon">&#9733;</span>
                   <span class="icon">&#9733;</span>
                   <span class="icon">&#9733;</span>
                   <span class="icon">&#9733;</span>
                 </label>
                 <label>
-                  <input type="radio" name="stars" value="5" />
+                  <input type="radio" name="rating" value="5" />
                   <span class="icon">&#9733;</span>
                   <span class="icon">&#9733;</span>
                   <span class="icon">&#9733;</span>
@@ -107,7 +107,7 @@
               <label for="comment">Subject</label>
             </div>
             <div class="">
-              <textarea id="comment" name="comment" placeholder="Write a review.." style="height:200px" required></textarea>
+              <textarea id="comment" name="comment" placeholder="Write a review.." style="height:200px"></textarea>
             </div>
           </div>
           <div class="row">

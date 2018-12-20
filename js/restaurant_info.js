@@ -166,7 +166,11 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  date.innerHTML = `${review.createdAt}`;
+  let mili = `${review.createdAt}`
+  console.log(mili);
+  let d = new Date();
+  
+  date.innerHTML = d.toDateString();
   li.appendChild(date);
 
   const rating = document.createElement('p');
@@ -180,6 +184,38 @@ createReviewHTML = (review) => {
 
   return li;
 }
+
+// Submitting the review
+let reviewData = document.getElementById('reviewForm');
+reviewData.addEventListener('submit', (event)=>{
+  event.preventDefault();
+   let formData = new FormData(reviewData);
+   console.log(new Date().getTime());
+
+   let reviewToPost = {
+     "restaurant_id": self.restaurant.id,
+     "name": formData.get('name'),
+     "rating": formData.get('rating'),
+     "comments": formData.get('comment'),
+     "createdAt": new Date().getTime(),
+     "updatedAt": new Date().getTime() 
+   }
+   
+   if(reviewToPost.comments == undefined || reviewToPost.name == undefined){
+     console.log("Fill in the required field");
+     return false
+   }
+
+   fetch('http://localhost:1337/reviews',{
+     method: 'POST',
+     headers: { "Content-type": "application/JSON; charset=UTF-8" },
+     body: JSON.stringify(reviewToPost)
+
+   }).then(() => {
+     fillReviewsHTML();
+   }).catch(console.log('error osiso'));
+});
+
 
 /**
  * Add restaurant name to the breadcrumb navigation menu
@@ -206,3 +242,5 @@ getParameterByName = (name, url) => {
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+
+
