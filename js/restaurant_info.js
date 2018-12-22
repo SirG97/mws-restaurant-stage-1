@@ -138,16 +138,12 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   //   return;
   // }
   const ul = document.getElementById('reviews-list');
-
-  DBHelper.fetchReviews(reviews =>{
+  console.log(reviews);
+  DBHelper.fetchReviews(self.restaurant.id, reviews =>{
     restaurant_id = DBHelper.restaurantId(self.restaurant);
     reviews.forEach(review => {
       console.log(review)
-      
-      if(review.hasOwnProperty('restaurant_id') && review.restaurant_id == restaurant_id){
         ul.appendChild(createReviewHTML(review));
-      }
-      
     });
   });
 
@@ -166,11 +162,10 @@ createReviewHTML = (review) => {
   li.appendChild(name);
 
   const date = document.createElement('p');
-  let mili = `${review.createdAt}`
-  console.log(mili);
+  let mili = `${review.createdAt}`;
   let d = new Date();
   
-  date.innerHTML = d.toDateString();
+  date.innerHTML = d.toDateString(mili);
   li.appendChild(date);
 
   const rating = document.createElement('p');
@@ -206,14 +201,14 @@ reviewData.addEventListener('submit', (event)=>{
      return false
    }
 
-   fetch('http://localhost:1337/reviews',{
+   fetch('http://localhost:1337/reviews/',{
      method: 'POST',
      headers: { "Content-type": "application/JSON; charset=UTF-8" },
      body: JSON.stringify(reviewToPost)
 
-   }).then(() => {
-     fillReviewsHTML();
-   }).catch(console.log('error osiso'));
+   }).then(response => {
+     console.log(response);
+   }).catch(error => {console.log("Request failed " + error);});
 });
 
 

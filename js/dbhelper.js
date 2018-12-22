@@ -74,16 +74,13 @@ class DBHelper {
     });
   }
 
-  static fetchReviews(callback){
-    let url = `${DBHelper.DATABASE_REVIEW_URL}/`;
-    console.log(url);
+  static fetchReviews(id, callback){
+    let url = `${DBHelper.DATABASE_REVIEW_URL}/?restaurant_id=${id}`;
     fetch(url).then(response =>{
-    
         response.json().then(reviews=> {
            callback(reviews);
         }).catch(err => console.log(err));
         
-    
     });
   }
 
