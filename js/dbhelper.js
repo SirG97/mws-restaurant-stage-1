@@ -74,14 +74,19 @@ class DBHelper {
     });
   }
 
-  static fetchReviews(id, callback){
+  static fetchReviews(id){
     let url = `${DBHelper.DATABASE_REVIEW_URL}/?restaurant_id=${id}`;
     fetch(url).then(response =>{
-        response.json().then(reviews=> {
-           callback(reviews);
-        }).catch(err => console.log(err));
-        
-    });
+      console.log(response);
+    return response.json()
+    }).then(reviews => {
+      reviews.forEach(review =>{
+        console.log(review);
+        fillReviewHTML(review);
+      });
+      
+    }).catch(err => console.log("I failed but I won't stop till I get it right ", err));
+    
   }
 
   /**
@@ -226,8 +231,75 @@ class DBHelper {
 
 
 
-  static postReview(){
+  static postReview(reviewToPost){
+    const url = `http://localhost:8000/reviews/`;
+    fetch(url,{
+      method: 'POST',
+      headers: {"Content-type": "application/json; charset=UTF-8"},
+      body: JSON.stringify(reviewToPost)
+
+    }).then(() => {
+      const dbPromise = idb.open("restaurant-reviews", 1, upgradeDB =>{
+        upgradeDB.createObjectStore("pending-reviews", {keyPath: "createdAt"});
+      });
+
+      dbPromise.then(dbObj => {
+        dbObj
+        .transaction("pending-reviews", "readwrite")
+        .objectStore("pending-reviews")
+        .clear();
+      })
+      //reload the page immediately
+      location.reload(true)
+    });
+  }
+  //Store any review posted by the user offline and wait for network connectivity
+  static isOffline(reviewToPost = {}, submitted){
+    if(submitted){
+      const dbPromise = idb.open("restaurant-reviews", 1, upgradeDB => {
+        upgradeDB.createObjectStore("pending-reviews", { keyPath: "createdAt" });
+      });
+
+      dbPromise.then(dbObj =>{
+        const tx = dbObj.transaction("pending-reviews", "readwrite");
+        const pendingReviews = tx.objectStore("pendiing-reviews");
+        pendingReviews.put(reviewToPost);
+      });
+    }
+  }
+
+  //Post the review when the user is back online
+  static isOnline(reviewToPost ={}, submitted){
+    if(submitted){
+      DBHelper.postReview(reviewToPost);
+    }
+    const dbPromise = idb.open("restaurant-reviews", 1, upgradeDB => {
+      upgradeDB.createObjectStore("pending-reviews", {
+        keyPath: "createdAt"
+      });
+
+      dbPromise
+      .then(dbObj =>{
+        return dbObj
+                .transaction("pending-reviews")
+                .objectStore("pending-reviews")
+                .getAll();
+      }).then(reviews =>{
+        reviews.map(review =>{
+          DBHelper.postReview(review);
+        });
+      });
+    });
+  }
+
+  static connectionStatus(reviewToPost){
+    window.addEventListener("online", () => {
+      DBHelper.isOnline(reviewToPost, false);
+    });
     
+    window.addEventListener("offline", () =>{
+      DBHelper.isOffline(reviewToPost, false);
+    });
   }
 
 }

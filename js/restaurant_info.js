@@ -1,3 +1,9 @@
+if (!navigator.serviceWorker.controller) {
+  DBHelper.registerServiceWorker();
+  console.log("Service worker is registering in the restaurant");
+}
+
+
 let restaurant;
 var newMap;
 
@@ -125,7 +131,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = () => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h2');
   title.innerHTML = 'Reviews';
@@ -138,16 +144,21 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   //   return;
   // }
   const ul = document.getElementById('reviews-list');
-  console.log(reviews);
-  DBHelper.fetchReviews(self.restaurant.id, reviews =>{
-    restaurant_id = DBHelper.restaurantId(self.restaurant);
-    reviews.forEach(review => {
-      console.log(review)
-        ul.appendChild(createReviewHTML(review));
-    });
-  });
-
+  DBHelper.fetchReviews(self.restaurant.id)
+ 
   container.appendChild(ul);
+}
+
+fillReviewHTML = (review) => {
+  const container = document.getElementById('reviews-container');
+  if (!review) {
+    container.appendChild(noReviews);
+    return;
+  }
+  const ul = document.getElementById('reviews-list');
+  ul.appendChild(createReviewHTML(review));
+  container.appendChild(ul);
+
 }
 
 /**
@@ -200,15 +211,53 @@ reviewData.addEventListener('submit', (event)=>{
      console.log("Fill in the required field");
      return false
    }
+    //  If there is network, post the form
 
-   fetch('http://localhost:1337/reviews/',{
-     method: 'POST',
-     headers: { "Content-type": "application/JSON; charset=UTF-8" },
-     body: JSON.stringify(reviewToPost)
+      if(navigator.onLine){
+        DBHelper.isOnline(reviewToPost, true);
+      }else{
+        DBHelper.isOffline(reviewToPost, true);
+      }
+    
 
-   }).then(response => {
-     console.log(response);
-   }).catch(error => {console.log("Request failed " + error);});
+
+});
+
+let favoritebtn = document.getElementById('favourite');
+favoritebtn.addEventListener('click', () =>{
+  const classNames = Array.from(favoritebtn.classList);
+  let favorite = false;
+  console.log("here is ok");
+  if (classNames.includes("add-favorite")) {
+    console.log("here eeeeehhnnnnnnmmm is ok");
+   let favorite = true;
+    favoritebtn.innerHTML = `Remove from favorites`;
+    favoritebtn.classList.remove("add-favorite");
+    favoritebtn.classList.add("remove-favorite");
+  } else {
+    console.log("here is kinda ok");
+    
+    favoritebtn.innerHTML = `Add to favorites`;
+    favoritebtn.classList.remove("remove-favorite");
+    favoritebtn.classList.add("add-favorite");
+  }
+
+  const dbPromise = idb.open('restaureview', 1, upgradeDB => {
+    upgradeDB.createObjectStore('restaureview-store', {keyPath: "id"});
+  });
+  const restaurantId = Number(getParameterByName("id"));
+console.log(restaurantId);
+console.log(self.restaurant.id);
+  fetch(`http://localhost:1337/restaurants/${self.restaurant.id}/?is_favorite=${favorite}`, 
+      {method: 'PUT'})
+      .then(response => {console.log(response)})
+      .then(response => {
+        dbPromise.then(dbObj => {
+          const tx = dbObj.transaction("restaureview-store", "readwrite");
+          const restaureview = tx.objectStore("restaureview-store");
+          restaureview.put(response);
+        });})
+        .catch(err => console.log("fetch error", err));
 });
 
 

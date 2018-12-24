@@ -443,6 +443,20 @@ input[type=text] {
   font-size: 25px;
 }
 
+#favourite {
+  background-color: rgb(233, 127, 6); /* Green */
+  border: none;
+  color: white;
+  padding: 15px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  float: right;
+  margin-right: 40px;
+  margin-bottom: 10px;
+}
+
 
 /* form styles ends */
 
