@@ -100,6 +100,16 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
 
+  const favoriteBtn = document.getElementById("favorite");
+  console.log(restaurant.is_favorite);
+  if (restaurant.is_favorite == 'true') {
+    favoriteBtn.innerHTML = `Remove from favorites`;
+    favoriteBtn.classList.add("remove-favorite");
+  } else {
+    favoriteBtn.innerHTML = `Add to favorites`;
+    favoriteBtn.classList.add("add-favorite");
+  }
+
   // fill operating hours
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
@@ -214,8 +224,10 @@ reviewData.addEventListener('submit', (event)=>{
     //  If there is network, post the form
 
       if(navigator.onLine){
+        console.log("we are online");
         DBHelper.isOnline(reviewToPost, true);
       }else{
+        console.log("we are offline");
         DBHelper.isOffline(reviewToPost, true);
       }
     
@@ -223,43 +235,25 @@ reviewData.addEventListener('submit', (event)=>{
 
 });
 
-let favoritebtn = document.getElementById('favourite');
+let favoritebtn = document.getElementById('favorite');
 favoritebtn.addEventListener('click', () =>{
   const classNames = Array.from(favoritebtn.classList);
-  let favorite = false;
-  console.log("here is ok");
   if (classNames.includes("add-favorite")) {
     console.log("here eeeeehhnnnnnnmmm is ok");
-   let favorite = true;
+    console.log(self.restaurant.id);
+   DBHelper.markFavorite(self.restaurant.id);
     favoritebtn.innerHTML = `Remove from favorites`;
     favoritebtn.classList.remove("add-favorite");
     favoritebtn.classList.add("remove-favorite");
   } else {
-    console.log("here is kinda ok");
-    
+   
+    DBHelper.UnmarkFavorite(self.restaurant.id);
     favoritebtn.innerHTML = `Add to favorites`;
     favoritebtn.classList.remove("remove-favorite");
     favoritebtn.classList.add("add-favorite");
   }
 
-  const dbPromise = idb.open('restaureview', 1, upgradeDB => {
-    upgradeDB.createObjectStore('restaureview-store', {keyPath: "id"});
-  });
-  const restaurantId = Number(getParameterByName("id"));
-console.log(restaurantId);
-console.log(self.restaurant.id);
-  fetch(`http://localhost:1337/restaurants/${self.restaurant.id}/?is_favorite=${favorite}`, 
-      {method: 'PUT'})
-      .then(response => {console.log(response)})
-      .then(response => {
-        dbPromise.then(dbObj => {
-          const tx = dbObj.transaction("restaureview-store", "readwrite");
-          const restaureview = tx.objectStore("restaureview-store");
-          restaureview.put(response);
-        });})
-        .catch(err => console.log("fetch error", err));
 });
-
 
 /**
  * Add restaurant name to the breadcrumb navigation menu

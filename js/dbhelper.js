@@ -232,7 +232,7 @@ class DBHelper {
 
 
   static postReview(reviewToPost){
-    const url = `http://localhost:8000/reviews/`;
+    const url = `http://localhost:1337/reviews/`;
     fetch(url,{
       method: 'POST',
       headers: {"Content-type": "application/json; charset=UTF-8"},
@@ -253,11 +253,74 @@ class DBHelper {
       location.reload(true)
     });
   }
+
+// Favorite a restaurant
+static markFavorite(id){
+  const query = `http://localhost:1337/restaurants/${id}/?is_favorite=true`;
+  fetch(query, {
+    method: 'PUT'
+  }).then(response => response.json()).then((resp) => {
+    console.log(resp);
+    const dbPromise = idb.open('restaureview', 1, upgradeDB => {
+      upgradeDB.createObjectStore('restaureview-store', {keyPath: "id"});
+    });
+        dbPromise.then((db) => {
+        const tx = db.transaction('restaureview-store', 'readwrite');
+        const objectStore = tx.objectStore('restaureview-store');
+        objectStore.put(resp);
+        return tx.complete;
+    });
+    
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+// Unfavorite a restaurant
+static UnmarkFavorite(id){
+  const query = `http://localhost:1337/restaurants/${id}/?is_favorite=false`;
+  fetch(query, {
+    method: 'PUT'
+  }).then(response => response.json()).then((resp) => {
+    console.log(resp);
+    const dbPromise = idb.open('restaureview', 1, upgradeDB => {
+      upgradeDB.createObjectStore('restaureview-store', {keyPath: "id"});
+    });
+        dbPromise.then((db) => {
+        const tx = db.transaction('restaureview-store', 'readwrite');
+        const objectStore = tx.objectStore('restaureview-store');
+        objectStore.put(resp);
+        return tx.complete;
+    });
+    
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+// //check if retaurant is favorite
+// static isFavorite(restaurant){
+//  // Check if restaurant has been added to favorites
+// console.log(self.restaurants.id)
+// console.log(self.restaurant.is_favorite);
+// const is_favorite = restaurant.is_favorite;
+//  const favoriteBtn = document.getElementById("favorite");
+//  if (is_favorite) {
+//    favoriteBtn.innerHTML = `Remove from favorites`;
+//    favoriteBtn.classList.add("remove-favorite");
+//  } else {
+//    favoriteBtn.innerHTML = `Add to favorites`;
+//    favoriteBtn.classList.add("add-favorite");
+//  }
+//}
+
+
+
   //Store any review posted by the user offline and wait for network connectivity
   static isOffline(reviewToPost = {}, submitted){
     if(submitted){
       const dbPromise = idb.open("restaurant-reviews", 1, upgradeDB => {
-        upgradeDB.createObjectStore("pending-reviews", { keyPath: "createdAt" });
+        upgradeDB.createObjectStore("pending-reviews", { keyPath: "id" });
       });
 
       dbPromise.then(dbObj =>{
